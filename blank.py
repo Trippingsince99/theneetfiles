@@ -5,7 +5,7 @@ from PyPDF2 import PdfReader, PdfWriter
 app = Flask(__name__)
 
 # Function to add blank pages to a PDF
-def add_blank_pages(input_file, output_file, option):
+def add_blank_pages(input_file, output_file, option, interval=1):
     try:
         reader = PdfReader(input_file)
         writer = PdfWriter()
@@ -19,6 +19,10 @@ def add_blank_pages(input_file, output_file, option):
             elif option == 3:  # After every page
                 writer.add_blank_page()
 
+            # Inserting blank pages at a user-defined interval
+            if interval > 1 and (i + 1) % interval == 0:
+                writer.add_blank_page()
+
         with open(output_file, "wb") as output_pdf:
             writer.write(output_pdf)
 
@@ -26,10 +30,12 @@ def add_blank_pages(input_file, output_file, option):
     except Exception as e:
         return f"An error occurred: {str(e)}"
 
+
 # Landing page
 @app.route("/", methods=["GET"])
 def home():
     return render_template("index.html")
+
 
 # Route for PDF Blank Page Inserter
 @app.route("/blank_page_inserter", methods=["GET", "POST"])
@@ -41,7 +47,8 @@ def blank_page_inserter():
             return jsonify({"error": "No file uploaded or selected"}), 400
 
         pdf_file = request.files["pdf_file"]
-        option = int(request.form.get("option", 0))
+        option = int(request.form.get("option", 0))  # Option for odd, even, or every page
+        interval = int(request.form.get("interval", 1))  # Interval for blank pages (every N pages)
         custom_name = request.form.get("custom_name", "").strip()
 
         upload_folder = "uploads"
@@ -54,14 +61,15 @@ def blank_page_inserter():
 
         pdf_file.save(input_path)
 
-        result = add_blank_pages(input_path, output_path, option)
+        result = add_blank_pages(input_path, output_path, option, interval)
 
         if result == "success":
             return send_file(output_path, as_attachment=True)
         else:
             return jsonify({"error": result}), 500
 
-# Placeholder routes for other tools
+
+# Other routes for different tools (placeholders for now)
 @app.route("/fill_in_blanks", methods=["GET"])
 def fill_in_blanks():
     return render_template("fill_in_blanks.html")
@@ -69,6 +77,7 @@ def fill_in_blanks():
 @app.route("/pdf_splitter", methods=["GET"])
 def pdf_splitter():
     return render_template("pdf_splitter.html")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
