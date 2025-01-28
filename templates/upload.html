@@ -4,39 +4,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDF Blank Page Inserter</title>
-    <script>
-        function selectFolder() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.webkitdirectory = true; // Allow folder selection
-            input.directory = true;
-            input.addEventListener('change', (event) => {
-                const folderPath = event.target.files[0].webkitRelativePath.split('/')[0];
-                document.getElementById('custom_folder').value = folderPath;
-            });
-            input.click();
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
         }
-    </script>
+        .container {
+            margin-top: 50px;
+            max-width: 600px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #343a40;
+            text-align: center;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #084298;
+        }
+    </style>
 </head>
 <body>
-    <h1>PDF Blank Page Inserter</h1>
-    <form action="/process" method="post" enctype="multipart/form-data">
-        <label for="pdf_file">Select PDF File:</label>
-        <input type="file" name="pdf_file" required><br><br>
+    <div class="container">
+        <h1>PDF Blank Page Inserter</h1>
+        <form action="/process" method="post" enctype="multipart/form-data" class="mt-4">
+            <div class="mb-3">
+                <label for="pdf_file" class="form-label">Select PDF File:</label>
+                <input type="file" class="form-control" name="pdf_file" required>
+            </div>
 
-        <label for="option">Choose where to add blank pages:</label><br>
-        <input type="radio" name="option" value="1" checked> After Every Odd Page<br>
-        <input type="radio" name="option" value="2"> After Every Even Page<br>
-        <input type="radio" name="option" value="3"> After Every Page<br><br>
+            <div class="mb-3">
+                <label for="option" class="form-label">Choose where to add blank pages:</label><br>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="option" value="1" checked>
+                    <label class="form-check-label">After Every Odd Page</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="option" value="2">
+                    <label class="form-check-label">After Every Even Page</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="option" value="3">
+                    <label class="form-check-label">After Every Page</label>
+                </div>
+            </div>
 
-        <label for="custom_folder">Custom Folder Location:</label><br>
-        <input type="text" id="custom_folder" name="custom_folder" placeholder="Click 'Browse' to select a folder" required>
-        <button type="button" onclick="selectFolder()">Browse</button><br><br>
+            <div class="mb-3">
+                <label for="custom_name" class="form-label">Custom Output File Name (without extension):</label>
+                <input type="text" class="form-control" name="custom_name" placeholder="E.g., MyProcessedPDF" required>
+            </div>
 
-        <label for="custom_name">Custom Output File Name (without extension):</label><br>
-        <input type="text" name="custom_name" placeholder="E.g., MyProcessedPDF" required><br><br>
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
 
-        <button type="submit">Submit</button>
-    </form>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
