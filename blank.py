@@ -1,7 +1,11 @@
+from flask import Flask, request, jsonify, render_template
 import os
-from tkinter import Tk, Label, Button, filedialog, Radiobutton, IntVar, messagebox
 from PyPDF2 import PdfReader, PdfWriter
+import webbrowser
 
+app = Flask(__name__)
+
+# Function to add blank pages to a PDF
 def add_blank_pages(input_file, output_file, option):
     try:
         reader = PdfReader(input_file)
@@ -21,64 +25,48 @@ def add_blank_pages(input_file, output_file, option):
         with open(output_file, "wb") as output_pdf:
             writer.write(output_pdf)
 
-        messagebox.showinfo("Success", f"PDF saved successfully at {output_file}")
-
+        return "PDF processed successfully!"
     except Exception as e:
-        messagebox.showerror("Error", f"An error occurred: {str(e)}")
+        return f"An error occurred: {str(e)}"
 
+# Route to render the upload form
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("upload.html")
 
-def select_pdf():
-    file_path = filedialog.askopenfilename(
-        title="Select PDF File",
-        filetypes=[("PDF Files", "*.pdf")]
-    )
-    if file_path:
-        lbl_selected_file.config(text=os.path.basename(file_path))
-        return file_path
-    return None
+# Route to handle PDF processing
+@app.route("/process", methods=["POST"])
+def process_pdf():
+    if "pdf_file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
 
+    pdf_file = request.files["pdf_file"]
+    option = int(request.form["option"])  # Get the selected option
+    custom_folder = request.form["custom_folder"]  # Custom folder path
+    custom_name = request.form["custom_name"]  # Custom file name
 
-def save_pdf(input_file, option):
-    if not input_file:
-        messagebox.showerror("Error", "Please select a PDF file first!")
-        return
+    if pdf_file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
 
-    output_path = filedialog.asksaveasfilename(
-        defaultextension=".pdf",
-        filetypes=[("PDF Files", "*.pdf")],
-        title="Save Modified PDF"
-    )
+    # Ensure the custom folder exists
+    os.makedirs(custom_folder, exist_ok=True)
 
-    if output_path:
-        add_blank_pages(input_file, output_path, option)
+    # Save the uploaded file temporarily
+    input_path = os.path.join(custom_folder, pdf_file.filename)
+    output_path = os.path.join(custom_folder, f"{custom_name}.pdf")
 
+    pdf_file.save(input_path)
 
-# Initialize Tkinter
-root = Tk()
-root.title("PDF Blank Page Inserter")
-root.geometry("400x350")
+    # Process the file
+    result = add_blank_pages(input_path, output_path, option)
 
-# Variables
-selected_file = None
-option_var = IntVar(value=1)  # Default option: After odd pages
+    if "successfully" in result:
+        # Open the custom folder automatically
+        webbrowser.open(custom_folder)
+        return jsonify({"message": result, "output_file": output_path}), 200
+    else:
+        return jsonify({"error": result}), 500
 
-# UI Elements
-Label(root, text="PDF Blank Page Inserter", font=("Arial", 16)).pack(pady=10)
-
-btn_select_file = Button(root, text="Select PDF File", command=lambda: globals().update({"selected_file": select_pdf()}))
-btn_select_file.pack(pady=5)
-
-lbl_selected_file = Label(root, text="No file selected", fg="gray")
-lbl_selected_file.pack(pady=5)
-
-Label(root, text="Choose where to add blank pages:").pack(pady=10)
-
-Radiobutton(root, text="After Every Odd Page", variable=option_var, value=1).pack()
-Radiobutton(root, text="After Every Even Page", variable=option_var, value=2).pack()
-Radiobutton(root, text="After Every Page", variable=option_var, value=3).pack()
-
-btn_save_pdf = Button(root, text="Save Modified PDF", command=lambda: save_pdf(selected_file, option_var.get()))
-btn_save_pdf.pack(pady=20)
-
-# Run Tkinter loop
-root.mainloop()
+# Main function
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

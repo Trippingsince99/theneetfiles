@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Blank Page Inserter</title>
+    <script>
+        function selectFolder() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.webkitdirectory = true; // Allow folder selection
+            input.directory = true;
+            input.addEventListener('change', (event) => {
+                const folderPath = event.target.files[0].webkitRelativePath.split('/')[0];
+                document.getElementById('custom_folder').value = folderPath;
+            });
+            input.click();
+        }
+    </script>
+</head>
+<body>
+    <h1>PDF Blank Page Inserter</h1>
+    <form action="/process" method="post" enctype="multipart/form-data">
+        <label for="pdf_file">Select PDF File:</label>
+        <input type="file" name="pdf_file" required><br><br>
+
+        <label for="option">Choose where to add blank pages:</label><br>
+        <input type="radio" name="option" value="1" checked> After Every Odd Page<br>
+        <input type="radio" name="option" value="2"> After Every Even Page<br>
+        <input type="radio" name="option" value="3"> After Every Page<br><br>
+
+        <label for="custom_folder">Custom Folder Location:</label><br>
+        <input type="text" id="custom_folder" name="custom_folder" placeholder="Click 'Browse' to select a folder" required>
+        <button type="button" onclick="selectFolder()">Browse</button><br><br>
+
+        <label for="custom_name">Custom Output File Name (without extension):</label><br>
+        <input type="text" name="custom_name" placeholder="E.g., MyProcessedPDF" required><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
