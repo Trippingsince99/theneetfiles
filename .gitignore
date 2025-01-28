@@ -1,0 +1,14 @@
+# Ignore node modules (if used)
+node_modules/
+
+# Ignore log files
+*.log
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ignore environment and sensitive files
+.env
+adsense.js
