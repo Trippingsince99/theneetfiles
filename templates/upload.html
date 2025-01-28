@@ -13,7 +13,7 @@
         }
         .container {
             margin-top: 50px;
-            max-width: 600px;
+            max-width: 700px;
             padding: 20px;
             background: white;
             border-radius: 8px;
@@ -42,19 +42,30 @@
             </div>
 
             <div class="mb-3">
-                <label for="option" class="form-label">Choose where to add blank pages:</label><br>
+                <label for="option" class="form-label">Choose how to add blank pages:</label><br>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="option" value="1" checked>
-                    <label class="form-check-label">After Every Odd Page</label>
+                    <label class="form-check-label">Add every N pages</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="option" value="2">
-                    <label class="form-check-label">After Every Even Page</label>
+                    <label class="form-check-label">Add after all pages in the specified range</label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="option" value="3">
-                    <label class="form-check-label">After Every Page</label>
-                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="interval" class="form-label">Add blank page every N pages:</label>
+                <input type="number" class="form-control" name="interval" min="1" placeholder="E.g., 2 (every 2 pages)" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="range_start" class="form-label">Start Page (optional):</label>
+                <input type="number" class="form-control" name="range_start" placeholder="E.g., 1">
+            </div>
+
+            <div class="mb-3">
+                <label for="range_end" class="form-label">End Page (optional):</label>
+                <input type="number" class="form-control" name="range_end" placeholder="E.g., 10">
             </div>
 
             <div class="mb-3">
